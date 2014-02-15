@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include <GL/gl.h>
 
-void draw_depth(short *buffer, char *video, float *drawtable){
+void draw_depth(short *buffer, char *video){
    int i,x,y;
    float depth;
    float red,green,blue;
@@ -17,9 +17,7 @@ void draw_depth(short *buffer, char *video, float *drawtable){
       x = i % 640;
       depth = (float)buffer[i] / 2047.0;
 
-      if(depth < 0.3) drawtable[i] = 1.0;
-
-      if(drawtable[i] == 1.0){
+      if(depth < 0.3){
          glColor3f(1.0, 1.0, 1.0);
       }
       else{
@@ -40,11 +38,8 @@ void process_kinect(){
    uint32_t time;
    short *buffer = NULL;
    int done = 0;
-   float *drawtable;
    char *video;
 
-   drawtable = malloc(sizeof(float) * 640 * 480);
- 
    while(!done){
       /* Event handling */
       while( SDL_PollEvent( &event) ){
@@ -58,11 +53,9 @@ void process_kinect(){
       freenect_sync_get_depth((void**)&buffer, &time, 0, FREENECT_DEPTH_11BIT);
       freenect_sync_get_video((void**)&video, &time, 0, FREENECT_VIDEO_RGB);
 
-      draw_depth(buffer, video, drawtable);
+      draw_depth(buffer, video);
 
    }
-
-   free(drawtable);
 }
 
 int main(int argc, char **argv){
